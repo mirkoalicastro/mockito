@@ -84,14 +84,23 @@ public class PremainAttachTest {
     public void parse_suppress_clinit_property_mixes_classes_and_packages() {
         Predicate<String> matcher =
                 PremainAttach.buildClinitPredicate(
-                        "com.example.ClassA, com.package.*, com.example.ClassB");
+                        "com.example.ClassA, com.pkg.*, com.example.ClassB");
 
         assertThat(matcher).isNotNull();
         assertThat(matcher.test("com.example.ClassA")).isTrue();
         assertThat(matcher.test("com.example.ClassB")).isTrue();
-        assertThat(matcher.test("com.package.Anything")).isTrue();
-        assertThat(matcher.test("com.package.nested.Thing")).isTrue();
+        assertThat(matcher.test("com.pkg.Anything")).isTrue();
+        assertThat(matcher.test("com.pkg.nested.Thing")).isTrue();
         assertThat(matcher.test("com.example.ClassC")).isFalse();
-        assertThat(matcher.test("com.packages.Other")).isFalse();
+        assertThat(matcher.test("com.pkgs.Other")).isFalse();
+    }
+
+    @Test
+    public void parse_suppress_clinit_property_with_middle_wildcard_is_not_supported() {
+        Predicate<String> matcher = PremainAttach.buildClinitPredicate("com.*.bar.*");
+
+        assertThat(matcher).isNotNull();
+        assertThat(matcher.test("com.foo.bar.Foo")).isFalse();
+        assertThat(matcher.test("com.any.bar.Bar")).isFalse();
     }
 }
