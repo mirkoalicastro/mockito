@@ -31,6 +31,10 @@ public class PremainAttach {
         Predicate<String> shouldSuppress =
                 buildClinitPredicate(System.getProperty(SUPPRESS_CLINIT_PROPERTY));
         if (shouldSuppress != null) {
+            System.err.println(
+                    "Suppressing static class initializer for '"
+                            + System.getProperty(SUPPRESS_CLINIT_PROPERTY)
+                            + "' (see mockito.suppress.clinit system property)");
             instrumentation.addTransformer(new ClinitSuppressionTransformer(shouldSuppress), false);
         }
         PremainAttach.instrumentation = instrumentation;
